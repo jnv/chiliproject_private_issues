@@ -7,6 +7,11 @@ Dispatcher.to_prepare :chiliproject_private_issues do
   unless Issue.included_modules.include? PrivateIssues::IssuePatch
     Issue.send(:include, PrivateIssues::IssuePatch)
   end
+
+  require_dependency 'issues_controller'
+  unless IssuesController.included_modules.include? PrivateIssues::IssuesControllerPatch
+    IssuesController.send(:include, PrivateIssues::IssuesControllerPatch)
+  end
 end
 
 Redmine::Plugin.register :chiliproject_private_issues do
