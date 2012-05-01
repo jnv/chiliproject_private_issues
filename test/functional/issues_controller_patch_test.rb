@@ -12,6 +12,8 @@ class IssuesControllerTest < ActionController::TestCase
     setup do
       @project = Project.find(1)
       @request.session[:user_id] = 2
+      @issue = Issue.find(1)
+      @issue.update_attribute(:private, true)
     end
 
     context "view hook" do
@@ -44,6 +46,8 @@ class IssuesControllerTest < ActionController::TestCase
       end
     end
 
+    # This is more related to IssuePatch where the safe attribute is declared
+    # Testing in controller ensures that :if lambda will actually work and User.current is considered
     context "POST create" do
       context "without permission" do
 
@@ -89,6 +93,64 @@ class IssuesControllerTest < ActionController::TestCase
           assert Issue.last.private
         end
       end
+    end
+
+    # Based on Redmine rev 5466
+    # http://www.redmine.org/projects/redmine/repository/revisions/5466/diff/trunk/test/functional/issues_controller_test.rb
+    context "GET index" do
+      setup do
+        get :index, :per_page => 100
+      end
+      should_respond_with :success
+      should_assign_to :issues
+      should "not assign private issues" do
+        assert_nil assigns(:issues).detect { |issue| issue.private? }
+      end
+    end
+
+    context "#find_issue" do
+      context "without permission" do
+        setup do
+          get :show, :id => @issue
+        end
+
+        should_respond_with 403
+      end
+
+      context "with permission" do
+        setup do
+          Role.find(1).add_permission! :view_private_issues
+          get :show, :id => @issue
+        end
+
+        should_respond_with :success
+      end
+
+      context "child issue" do
+        setup do
+          @child = Issue.generate_for_project!(@project) do |issue|
+            issue.parent_issue_id = @issue.id
+          end
+        end
+
+        context "without permission" do
+          setup do
+            get :show, :id => @child
+          end
+
+          should_respond_with 403
+        end
+
+        context "with permission" do
+          setup do
+            Role.find(1).add_permission! :view_private_issues
+            get :show, :id => @child
+          end
+
+          should_respond_with :success
+        end
+      end
+
     end
 
   end

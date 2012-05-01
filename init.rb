@@ -8,6 +8,11 @@ Dispatcher.to_prepare :chiliproject_private_issues do
     Issue.send(:include, PrivateIssues::IssuePatch)
   end
 
+  require_dependency 'query'
+  unless Query.included_modules.include? PrivateIssues::QueryPatch
+    Query.send(:include, PrivateIssues::QueryPatch)
+  end
+
   require_dependency 'issues_controller'
   unless IssuesController.included_modules.include? PrivateIssues::IssuesControllerPatch
     IssuesController.send(:include, PrivateIssues::IssuesControllerPatch)
