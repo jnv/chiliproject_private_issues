@@ -8,7 +8,6 @@ Allows individual issues to be marked as private. These issues are can be viewed
 
 1. Follow the instructions at https://www.chiliproject.org/projects/chiliproject/wiki/Plugin_Install
 2. Two new permissions will be available for roles: "View private issues" and "Manage private issues" (to manage privacy of the issue)
-3. Page can be changed to private using the contextual links on the wiki page
 
 ## Compatibility
 

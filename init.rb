@@ -2,8 +2,11 @@
 require 'redmine'
 require 'dispatcher'
 require_dependency 'private_issues/hook'
-Dispatcher.to_prepare :chiliproject_private_wiki do
-  
+Dispatcher.to_prepare :chiliproject_private_issues do
+  require_dependency 'issue'
+  unless Issue.included_modules.include? PrivateIssues::IssuePatch
+    Issue.send(:include, PrivateIssues::IssuePatch)
+  end
 end
 
 Redmine::Plugin.register :chiliproject_private_issues do
