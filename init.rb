@@ -1,8 +1,7 @@
 # -*- encoding : utf-8 -*-
 require 'redmine'
 require 'dispatcher'
-#require_dependency 'private_issues/hook'
-
+require_dependency 'private_issues/hook'
 Dispatcher.to_prepare :chiliproject_private_wiki do
   
 end
