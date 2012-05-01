@@ -1,0 +1,13 @@
+div.issue span.private {
+    position: relative;
+    bottom: 2px;
+    text-transform: uppercase;
+    background: #d22;
+    color: #fff;
+    font-weight: bold;
+    padding: 0px 2px 0px 2px;
+    font-size: 60%;
+    margin-right: 2px;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+}

@@ -1,0 +1,7 @@
+<% if controller and controller.class.name == 'IssuesController' and controller.action_name == 'show' and @issue and @issue.id %>
+    <script type="text/javascript">
+        <% if @issue.private_with_ancestors %>
+        jQuery('#content .issue h1.subject').prepend('<span class="private"><%= l :label_private_issue %></span>');
+        <% end %>
+    </script>
+<% end %>
