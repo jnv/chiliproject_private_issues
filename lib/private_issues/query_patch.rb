@@ -15,8 +15,10 @@ module PrivateIssues
     module InstanceMethods
       def statement_with_private_issues
         filters_clauses = statement_without_private_issues
-        unless project && User.current.allowed_to?(:view_private_issues, project)
-          filters_clauses << " AND issues.private='f'"
+
+        user = User.current
+        unless project && user.allowed_to?(:view_private_issues, project)
+          filters_clauses << " AND (issues.private = #{connection.quoted_false} OR issues.author_id = #{user.id} OR issues.assigned_to_id = #{user.id})"
         end
         filters_clauses
       end

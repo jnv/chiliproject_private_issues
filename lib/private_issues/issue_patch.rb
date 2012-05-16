@@ -32,17 +32,17 @@ module PrivateIssues
     end
 
     module InstanceMethods
-      def private_with_ancestors
-        self.private || ancestors.detect { |anc| anc.private }
-      end
-
       def private_issue_visible?(project, user)
-        !user.nil? && user.allowed_to?(:view_private_issues, project)
+        if self.private?
+          !user.nil? and (user.allowed_to?(:view_private_issues, project) or (self.author == user) or (self.assigned_to == user))
+        else
+          true
+        end
       end
 
       def visible_with_private_issues?(user=User.current)
         allowed = visible_without_private_issues?(user)
-        if allowed and self.private_with_ancestors
+        if allowed
           return private_issue_visible?(project, user)
         end
         allowed

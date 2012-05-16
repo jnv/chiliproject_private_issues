@@ -28,11 +28,21 @@ class PrivateIssues::IssueTestPatch < ActiveSupport::TestCase
       assert @issue.visible?
     end
 
-    should "respect private pages in upper hierarchy" do
-      @child = Issue.generate_for_project!(@project) do |issue|
-        issue.parent_issue_id = @issue.id
-      end
-      assert !@child.visible?
+    #should "respect private pages in upper hierarchy" do
+    #  @child = Issue.generate_for_project!(@project) do |issue|
+    #    issue.parent_issue_id = @issue.id
+    #  end
+    #  assert !@child.visible?
+    #end
+
+    should "be visible for author" do
+      @issue.author = @user
+      assert @issue.visible?
+    end
+
+    should "be visible for assignee" do
+      @issue.assigned_to = @user
+      assert @issue.visible?
     end
 
   end

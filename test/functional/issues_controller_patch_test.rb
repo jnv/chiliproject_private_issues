@@ -13,7 +13,8 @@ class IssuesControllerTest < ActionController::TestCase
       @project = Project.find(1)
       @request.session[:user_id] = 2
       @issue = Issue.find(1)
-      @issue.update_attribute(:private, true)
+
+      @issue.update_attributes!({:private => true, :author_id => 1})
     end
 
     context "view hook" do
@@ -109,6 +110,28 @@ class IssuesControllerTest < ActionController::TestCase
     end
 
     context "#find_issue" do
+      setup do
+        @issue.reload
+      end
+      
+      context "user is an author" do
+        setup do
+          @issue.update_attribute(:author, User.find(2))
+          get :show, :id => @issue
+        end
+
+        should_respond_with :success
+      end
+
+      context "user is an assignee" do
+        setup do
+          @issue.update_attribute(:assigned_to, User.find(2))
+          get :show, :id => @issue
+        end
+
+        should_respond_with :success
+      end
+
       context "without permission" do
         setup do
           get :show, :id => @issue
@@ -126,7 +149,7 @@ class IssuesControllerTest < ActionController::TestCase
         should_respond_with :success
       end
 
-      context "child issue" do
+      context "child issue (deprecated)" do
         setup do
           @child = Issue.generate_for_project!(@project) do |issue|
             issue.parent_issue_id = @issue.id
@@ -138,7 +161,8 @@ class IssuesControllerTest < ActionController::TestCase
             get :show, :id => @child
           end
 
-          should_respond_with 403
+          #should_respond_with 403
+          should_respond_with :success
         end
 
         context "with permission" do

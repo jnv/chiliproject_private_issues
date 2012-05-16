@@ -15,7 +15,7 @@ module PrivateIssues
 
       def find_issue_with_private_issues
         find_issue_without_private_issues
-        if @issue && @issue.private_with_ancestors && !@issue.private_issue_visible?(@project, User.current)
+        if @issue and !@issue.private_issue_visible?(@project, User.current)
           deny_access
         end
       end
