@@ -99,21 +99,39 @@ class IssuesControllerTest < ActionController::TestCase
     # Based on Redmine rev 5466
     # http://www.redmine.org/projects/redmine/repository/revisions/5466/diff/trunk/test/functional/issues_controller_test.rb
     context "GET index" do
-      setup do
-        get :index, :per_page => 100
+      context "without permission" do
+        setup do
+          get :index, :per_page => 100
+        end
+        should_respond_with :success
+        should_assign_to :issues
+        should "not assign private issues" do
+          assert_nil assigns(:issues).detect { |issue| issue.private? }
+        end
       end
-      should_respond_with :success
-      should_assign_to :issues
-      should "not assign private issues" do
-        assert_nil assigns(:issues).detect { |issue| issue.private? }
+
+      context "for assignee" do
+        setup do
+          @issue.reload.update_attribute(:assigned_to_id, 2)
+          get :index, :per_page => 100
+        end
+
+        should_respond_with :success
+        should_assign_to :issues
+
+        should "assign his issue" do
+          assert_include assigns(:issues), @issue
+        end
       end
+
+
     end
 
     context "#find_issue" do
       setup do
         @issue.reload
       end
-      
+
       context "user is an author" do
         setup do
           @issue.update_attribute(:author, User.find(2))
