@@ -1,7 +1,9 @@
 <%# %>
-<% if controller and controller.class.name == 'IssuesController' and
-        controller.action_name == 'show' and
-        @issue and @issue.id # Make sure we have an issue and it's not new %>
+<%
+   if controller and controller.class.name == 'IssuesController' and
+           controller.action_name == 'show' and
+           @issue and @issue.id # Make sure we have an issue and it's not new
+%>
     <script type="text/javascript">
         <% if @issue.private? %>
         jQuery('#content .issue h1.subject').prepend('<span class="private"><%= l :label_private_issue %></span>');
