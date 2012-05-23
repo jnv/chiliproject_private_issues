@@ -2,7 +2,7 @@
 
 [![Build Status](https://secure.travis-ci.org/jnv/chiliproject_private_issues.png?branch=master)](http://travis-ci.org/jnv/chiliproject_private_issues)
 
-Allows individual issues to be marked as private. These issues are can be viewed only by roles with "View private issues" permission. This is similar to the standard functionality in Redmine.
+Allows individual issues to be marked as private. These issues are can be viewed only by roles with "View private issues" permission. This is similar to the standard functionality in Redmine (see [ChiliProject's bugtracker](https://www.chiliproject.org/issues/189)).
 
 ## Installation
 
