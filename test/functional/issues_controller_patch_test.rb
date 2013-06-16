@@ -122,6 +122,16 @@ class PrivateIssues::IssuesControllerPatchTest < ActionController::TestCase #Iss
           end
           assert !@public_issue.reload.private
         end
+
+        should "not unmark issue as private" do
+          assert @private_issue.private, "Failed sanity check"
+          assert_no_difference('IssueJournal.count') do
+            put :update, :id => @private_issue, :issue => {
+              :private => '0'
+            }
+          end
+          assert @private_issue.reload.private, "Issue was not set to public"
+        end
       end
 
       context "with permission" do
@@ -137,6 +147,16 @@ class PrivateIssues::IssuesControllerPatchTest < ActionController::TestCase #Iss
             }
           end
           assert @public_issue.reload.private
+        end
+
+        should "unmark issue as private" do
+          assert @private_issue.private, "Failed sanity check"
+          assert_difference('IssueJournal.count') do
+            put :update, :id => @private_issue, :issue => {
+              :private => '0'
+            }
+          end
+          assert !@private_issue.reload.private, "Issue was not set to public"
         end
       end
 
