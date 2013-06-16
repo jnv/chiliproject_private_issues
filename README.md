@@ -9,7 +9,10 @@ Allows individual issues to be marked as private. These issues are can be viewed
 
 ## Compatibility
 
-Plugin was tested with ChiliProject 3.1.0 and Ruby 1.9.3.
+Plugin was tested with:
+
+* ChiliProject 3.3.0
+* Ruby 1.9.3p327
 
 ## Testing
 
