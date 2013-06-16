@@ -1,9 +1,7 @@
 #!/bin/sh
 
-# Git repo of the ChiliProject/Redmine
-
 # Prepare ChiliProject
-if [[ -n "$MAIN_ARCHIVE" ]]; then
+if [ "x$MAIN_ARCHIVE" != "x" ]; then
   wget $MAIN_ARCHIVE
   mkdir -p $TARGET_DIR
   tar -xf *.tar.gz --strip 1 -C $TARGET_DIR
