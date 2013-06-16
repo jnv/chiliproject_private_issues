@@ -1,5 +1,7 @@
 #!/bin/sh
 
+pwd
+
 # Prepare ChiliProject
 if [ "x$MAIN_ARCHIVE" != "x" ]; then
   wget $MAIN_ARCHIVE
@@ -12,9 +14,11 @@ fi
 cd $TARGET_DIR
 
 # Copy over the already downloaded plugin
-cp -r ~/builds/*/$REPO_NAME vendor/plugins/$PLUGIN_DIR
+cp -r ~/*/$REPO_NAME vendor/plugins/$PLUGIN_NAME
 
 #export BUNDLE_GEMFILE=$TARGET_DIR/Gemfile
+
+ruby --version
 
 bundle install --without=$BUNDLE_WITHOUT
 
