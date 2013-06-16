@@ -14,7 +14,7 @@ fi
 cd $TARGET_DIR
 
 # Copy over the already downloaded plugin
-cp -r ~/*/$REPO_NAME vendor/plugins/$PLUGIN_NAME
+cp -r ~/build/*/$REPO_NAME $TARGET_DIR/vendor/plugins/$PLUGIN_DIR
 
 #export BUNDLE_GEMFILE=$TARGET_DIR/Gemfile
 
