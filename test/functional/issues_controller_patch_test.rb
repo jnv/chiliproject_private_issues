@@ -134,9 +134,10 @@ class PrivateIssues::IssuesControllerPatchTest < ActionController::TestCase #Iss
         end
       end
 
-      context "with permission" do
+      context "with manage and view permissions" do
         setup do
           Role.find(1).add_permission! :manage_private_issues
+          Role.find(1).add_permission! :view_private_issues # Required due to visible? protection
         end
 
         should "mark issue as private" do
@@ -173,6 +174,16 @@ class PrivateIssues::IssuesControllerPatchTest < ActionController::TestCase #Iss
             }
           end
           assert @public_issue.reload.private
+        end
+
+        should "unmark issue as private" do
+          assert @private_issue.private, "Failed sanity check"
+          assert_difference('IssueJournal.count') do
+            put :update, :id => @private_issue, :issue => {
+              :private => '0'
+            }
+          end
+          assert !@private_issue.reload.private, "Issue was not set to public"
         end
       end
     end
