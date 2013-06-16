@@ -3,11 +3,17 @@
 # Git repo of the ChiliProject/Redmine
 
 # Prepare ChiliProject
-git clone --depth=100 $MAIN_REPO $TARGET_DIR
+if [[ -n "$MAIN_ARCHIVE" ]]; then
+  wget $MAIN_ARCHIVE
+  mkdir -p $TARGET_DIR
+  tar -xf *.tar.gz --strip 1 -C $TARGET_DIR
+else
+  git clone --depth=100 $MAIN_REPO $TARGET_DIR
+  #git submodule update --init --recursive
+fi
 cd $TARGET_DIR
-#git submodule update --init --recursive
 
-# Copy over the already downloaded plugin 
+# Copy over the already downloaded plugin
 cp -r ~/builds/*/$REPO_NAME vendor/plugins/$PLUGIN_DIR
 
 #export BUNDLE_GEMFILE=$TARGET_DIR/Gemfile

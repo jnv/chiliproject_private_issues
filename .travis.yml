@@ -8,8 +8,12 @@ rvm:
 gemfile: non-existent-gemfile
 
 before_install:
-  # Git repo of the ChiliProject/Redmine
+  ## Set one of these:
+  # Tarball with specific branch or tag (preferred)
+  - export MAIN_ARCHIVE="https://github.com/chiliproject/chiliproject/archive/v3.3.0.tar.gz"
+  # Git repo of the ChiliProject/Redmine for testing against master
   - export MAIN_REPO="git://github.com/chiliproject/chiliproject.git"
+
   # Name of your plugin's repo
   - export REPO_NAME=chiliproject_private_issues
   # Plugin's name/directory
