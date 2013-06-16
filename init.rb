@@ -23,7 +23,7 @@ Redmine::Plugin.register :chiliproject_private_issues do
   name 'Private Issues'
   author 'Jan Vlnas'
   description 'Allows individual issues to be set as private'
-  version '0.0.1'
+  version '0.1.0'
   url 'https://github.com/jnv/chiliproject_private_issues'
   author_url 'https://github.com/jnv'
 
