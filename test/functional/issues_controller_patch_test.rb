@@ -2,19 +2,29 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 # Reuse the default test
-require File.expand_path('test/functional/issues_controller_test', RAILS_ROOT)
+# require File.expand_path('test/functional/issues_controller_test', RAILS_ROOT)
+require 'issues_controller'
+class IssuesController; def rescue_action(e) raise e end; end
 
-class IssuesControllerTest < ActionController::TestCase
+class PrivateIssues::IssuesControllerPatchTest < ActionController::TestCase #IssuesControllerTest
 
   fixtures :all
+
+  def setup
+    @controller = IssuesController.new
+    @request    = ActionController::TestRequest.new
+    @response   = ActionController::TestResponse.new
+    User.current = nil
+  end
 
   context "PrivateIssuesPlugin" do
     setup do
       @project = Project.find(1)
       @request.session[:user_id] = 2
-      @issue = Issue.find(1)
+      @private_issue = Issue.find(1)
+      @private_issue.update_attributes!({:private => true, :author_id => 1})
 
-      @issue.update_attributes!({:private => true, :author_id => 1})
+      @public_issue = Issue.find(2)
     end
 
     context "view hook" do
@@ -66,6 +76,7 @@ class IssuesControllerTest < ActionController::TestCase
         end
 
         should "not create private issue" do
+          assert_equal 'This is the test_new issue', Issue.last.subject
           assert !Issue.last.private
         end
 
@@ -96,6 +107,40 @@ class IssuesControllerTest < ActionController::TestCase
       end
     end
 
+    context "PUT update" do
+      context "without permission" do
+
+        setup do
+        end
+
+        should "not mark issue as private" do
+          assert !@public_issue.private, "Sanity check: Issue should not be private in the first place"
+          assert_no_difference('IssueJournal.count') do
+            put :update, :id => @public_issue, :issue => {
+              :private => '1'
+            }
+          end
+          assert !@public_issue.reload.private
+        end
+      end
+
+      context "with permission" do
+        setup do
+          Role.find(1).add_permission! :manage_private_issues
+        end
+
+        should "mark issue as private" do
+          assert !@public_issue.private, "Sanity check: Issue for testing should not be private in the first place"
+          assert_difference('IssueJournal.count') do
+            put :update, :id => @public_issue, :issue => {
+              :private => '1'
+            }
+          end
+          assert @public_issue.reload.private
+        end
+      end
+    end
+
     # Based on Redmine rev 5466
     # http://www.redmine.org/projects/redmine/repository/revisions/5466/diff/trunk/test/functional/issues_controller_test.rb
     context "GET index" do
@@ -112,7 +157,7 @@ class IssuesControllerTest < ActionController::TestCase
 
       context "for assignee" do
         setup do
-          @issue.reload.update_attribute(:assigned_to_id, 2)
+          @private_issue.reload.update_attribute(:assigned_to_id, 2)
           get :index, :per_page => 100
         end
 
@@ -120,7 +165,7 @@ class IssuesControllerTest < ActionController::TestCase
         should_assign_to :issues
 
         should "assign his issue" do
-          assert_include assigns(:issues), @issue
+          assert_include assigns(:issues), @private_issue
         end
       end
 
@@ -129,13 +174,13 @@ class IssuesControllerTest < ActionController::TestCase
 
     context "#find_issue" do
       setup do
-        @issue.reload
+        @private_issue.reload
       end
 
       context "user is an author" do
         setup do
-          @issue.update_attribute(:author, User.find(2))
-          get :show, :id => @issue
+          @private_issue.update_attribute(:author, User.find(2))
+          get :show, :id => @private_issue
         end
 
         should_respond_with :success
@@ -143,8 +188,8 @@ class IssuesControllerTest < ActionController::TestCase
 
       context "user is an assignee" do
         setup do
-          @issue.update_attribute(:assigned_to, User.find(2))
-          get :show, :id => @issue
+          @private_issue.update_attribute(:assigned_to, User.find(2))
+          get :show, :id => @private_issue
         end
 
         should_respond_with :success
@@ -152,7 +197,7 @@ class IssuesControllerTest < ActionController::TestCase
 
       context "without permission" do
         setup do
-          get :show, :id => @issue
+          get :show, :id => @private_issue
         end
 
         should_respond_with 403
@@ -161,7 +206,7 @@ class IssuesControllerTest < ActionController::TestCase
       context "with permission" do
         setup do
           Role.find(1).add_permission! :view_private_issues
-          get :show, :id => @issue
+          get :show, :id => @private_issue
         end
 
         should_respond_with :success
@@ -170,7 +215,7 @@ class IssuesControllerTest < ActionController::TestCase
       context "child issue (deprecated)" do
         setup do
           @child = Issue.generate_for_project!(@project) do |issue|
-            issue.parent_issue_id = @issue.id
+            issue.parent_issue_id = @private_issue.id
           end
         end
 
