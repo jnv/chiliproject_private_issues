@@ -139,6 +139,22 @@ class PrivateIssues::IssuesControllerPatchTest < ActionController::TestCase #Iss
           assert @public_issue.reload.private
         end
       end
+
+      context "as admin" do
+        setup do
+          @request.session[:user_id] = 1
+        end
+
+        should "mark issue as private" do
+          assert !@public_issue.private, "Sanity check: Issue for testing should not be private in the first place"
+          assert_difference('IssueJournal.count') do
+            put :update, :id => @public_issue, :issue => {
+              :private => '1'
+            }
+          end
+          assert @public_issue.reload.private
+        end
+      end
     end
 
     # Based on Redmine rev 5466
