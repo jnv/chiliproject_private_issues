@@ -2,9 +2,8 @@
 require File.expand_path('../../../../test_helper', __FILE__)
 
 require_dependency 'issue'
-class PrivateIssues::IssueTestPatch < ActiveSupport::TestCase
-
-  subject { Issue.new }
+# require File.expand_path('test/unit/issue_test', RAILS_ROOT)
+class PrivateIssues::IssuePatchTest < ActiveSupport::TestCase #IssueTest
 
   # Based on WikiPageDropTest
   def setup
