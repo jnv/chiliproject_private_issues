@@ -1,5 +1,5 @@
 <% if User.current.allowed_to?(:manage_private_issues, @project) -%>
-    <% hidden_field_tag 'issue[private]', '0' %>
+    <%= hidden_field_tag 'issue[private]', '0' %>
     <p id="private_issue_check">
       <%= label :issue, :private, l(:label_private_issue) %>
       <%= check_box_tag 'issue[private]', '1', issue.private? %>
